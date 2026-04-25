@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Qué tipo de estudiante UNED eres?</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bitter:ital,wght@0,400;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream: #f4f0e6;
+  --cream-dark: #e2dccf;
+  --ink: #181410;
+  --ink-light: #3a3020;
+
+  --fantasma:    #1a6e8a;
+  --fantasma-l:  #e0f2f8;
+  --veterano:    #7a3a0a;
+  --veterano-l:  #faeee0;
+  --turbo:       #1a6e3a;
+  --turbo-l:     #e0f5e8;
+  --foro:        #7a1a6e;
+  --foro-l:      #f5e0f4;
+  --profe:       #c0380a;
+  --profe-l:     #fde8e0;
+
+  --border: 3px solid var(--ink);
+  --shadow: 5px 5px 0 var(--ink);
+  --shadow-sm: 3px 3px 0 var(--ink);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Bitter', Georgia, serif;
+  min-height: 100vh;
+  padding: 0 0 5rem;
+  overflow-x: hidden;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(24,20,16,0.06) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.progress-wrap {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 5px;
+  background: var(--cream-dark);
+  border-bottom: 2px solid var(--ink);
+  z-index: 200;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--ink);
+  transition: width 0.4s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+
+.wrapper {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 1.2rem;
+  position: relative;
+  z-index: 1;
+}
+
+header {
+  padding: 3.5rem 0 2rem;
+  text-align: center;
+}
+
+.tag-line {
+  display: inline-block;
+  background: var(--ink);
+  color: var(--cream);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.8rem, 10vw, 5rem);
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  margin-bottom: 0.6rem;
+}
+
+h1 .outline {
+  display: block;
+  -webkit-text-stroke: 3px var(--ink);
+  color: transparent;
+}
+
+.subtitle {
+  font-family: 'Bitter', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink-light);
+  max-width: 460px;
+  margin: 1rem auto 0;
+  line-height: 1.55;
+}
+
+.header-rule {
+  border: none;
+  border-top: 3px solid var(--ink);
+  margin: 2rem 0;
+}
+
+.pagination {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+.pag-dot {
+  width: 28px; height: 8px;
+  border: 2px solid var(--ink);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.pag-dot.done { background: var(--ink-light); border-color: var(--ink-light); }
+.pag-dot.active { background: var(--ink); }
+
+.question-card {
+  background: #fff;
+  border: var(--border);
+  box-shadow: var(--shadow);
+  padding: 2rem 1.8rem 1.5rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.15s;
+}
+.question-card.answered { box-shadow: 2px 2px 0 var(--ink); }
+
+.q-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 0.6rem;
+}
+
+.q-text {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.45;
+  margin-bottom: 1.4rem;
+}
+
+.q-sub {
+  font-size: 0.82rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink-light);
+  margin-bottom: 1.4rem;
+  margin-top: -0.8rem;
+  line-height: 1.5;
+}
+
+.options { display: flex; flex-direction: column; gap: 8px; }
+
+.opt-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--cream);
+  border: 2px solid var(--cream-dark);
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Bitter', serif;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--ink);
+  transition: all 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.opt-btn:hover {
+  border-color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  transform: translate(-2px,-2px);
+}
+.opt-btn.selected {
+  transform: translate(-3px,-3px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.opt-btn.selected.opt-fantasma { background: var(--fantasma-l); border-color: var(--fantasma); }
+.opt-btn.selected.opt-veterano { background: var(--veterano-l); border-color: var(--veterano); }
+.opt-btn.selected.opt-turbo    { background: var(--turbo-l);    border-color: var(--turbo);    }
+.opt-btn.selected.opt-foro     { background: var(--foro-l);     border-color: var(--foro);     }
+.opt-btn.selected.opt-profe    { background: var(--profe-l);    border-color: var(--profe);    }
+
+.opt-letter {
+  flex-shrink: 0;
+  width: 24px; height: 24px;
+  border: 2px solid currentColor;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--ink-light);
+  margin-top: 2px;
+}
+.opt-btn.selected .opt-letter {
+  background: var(--ink);
+  color: var(--cream);
+  border-color: var(--ink);
+}
+
+.nav-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.8rem;
+  gap: 1rem;
+}
+.btn-nav {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.5rem;
+  border: 2px solid var(--ink);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.12s;
+  color: var(--ink);
+}
+.btn-nav:hover:not(:disabled) {
+  background: var(--ink);
+  color: var(--cream);
+  box-shadow: var(--shadow-sm);
+  transform: translate(-2px,-2px);
+}
+.btn-nav:disabled { opacity: 0.22; cursor: not-allowed; }
+.btn-next {
+  background: var(--ink); color: var(--cream); padding: 0.65rem 2rem;
+}
+.btn-next:hover:not(:disabled) {
+  background: var(--ink-light);
+  transform: translate(-2px,-2px);
+  box-shadow: var(--shadow-sm);
+}
+.btn-next:disabled {
+  background: var(--cream-dark);
+  border-color: var(--cream-dark);
+  color: var(--ink-light);
+  opacity: 0.5;
+  transform: none; box-shadow: none;
+}
+.nav-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--ink-light);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+/* RESULT */
+#result { display: none; }
+
+.result-hero {
+  padding: 3rem 2rem 2.5rem;
+  border: var(--border);
+  box-shadow: 8px 8px 0 var(--ink);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.result-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.18) 1px, transparent 1px);
+  background-size: 12px 12px;
+  pointer-events: none;
+}
+.res-fantasma { background: var(--fantasma); }
+.res-veterano { background: var(--veterano); }
+.res-turbo    { background: var(--turbo);    }
+.res-foro     { background: var(--foro);     }
+.res-profe    { background: var(--profe);    }
+
+.result-emoji { font-size: 3.5rem; display: block; margin-bottom: 0.8rem; line-height: 1; }
+.result-verdict {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 0.5rem;
+}
+.result-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 11vw, 5.5rem);
+  line-height: 0.9;
+  color: #fff;
+  text-shadow: 4px 4px 0 rgba(0,0,0,0.25);
+  margin-bottom: 0.4rem;
+}
+.result-tagline {
+  font-family: 'Bitter', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.9);
+}
+
+.result-body {
+  background: #fff;
+  border: var(--border);
+  box-shadow: var(--shadow);
+  padding: 2rem 1.8rem;
+  margin-bottom: 1.2rem;
+}
+.result-section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.06em;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1rem;
+}
+.result-quien-text {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  margin-bottom: 1.5rem;
+  color: var(--ink);
+}
+.dato-nerd-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 0.7rem;
+  color: var(--ink-light);
+}
+.dato-nerd-label::before, .dato-nerd-label::after {
+  content: ''; flex: 1; height: 1px; background: var(--cream-dark);
+}
+.dato-nerd {
+  background: var(--cream);
+  border-left: 4px solid var(--ink);
+  padding: 1rem 1.2rem;
+  font-size: 0.85rem;
+  line-height: 1.65;
+  font-style: italic;
+  color: var(--ink-light);
+}
+
+.dim-section {
+  background: #fff;
+  border: var(--border);
+  box-shadow: var(--shadow);
+  padding: 1.8rem;
+  margin-bottom: 1.2rem;
+}
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.score-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  width: 100px;
+  flex-shrink: 0;
+  color: var(--ink-light);
+  line-height: 1.3;
+}
+.score-bar-bg {
+  flex: 1; height: 14px;
+  border: 2px solid var(--ink);
+  background: var(--cream);
+  overflow: hidden;
+}
+.score-bar-fill {
+  height: 100%; width: 0%;
+  transition: width 1s cubic-bezier(.4,0,.2,1);
+}
+.score-bar-fill.fantasma { background: var(--fantasma); }
+.score-bar-fill.veterano { background: var(--veterano); }
+.score-bar-fill.turbo    { background: var(--turbo);    }
+.score-bar-fill.foro     { background: var(--foro);     }
+.score-bar-fill.profe    { background: var(--profe);    }
+
+.score-pct {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.result-footer { text-align: center; padding-top: 0.5rem; }
+.btn-restart {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.7rem 1.8rem;
+  border: 2px solid var(--ink);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.12s;
+  color: var(--ink);
+}
+.btn-restart:hover {
+  background: var(--ink); color: var(--cream);
+  box-shadow: var(--shadow-sm);
+  transform: translate(-2px,-2px);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeUp 0.35s ease both; }
+</style>
+</head>
+<body>
+
+<div class="progress-wrap"><div class="progress-fill" id="progressBar"></div></div>
+
+<div class="wrapper">
+  <header>
+    <span class="tag-line">Test de autoconocimiento académico · UNED</span>
+    <h1>¿Qué tipo de<br><span class="outline">estudiante UNED</span><br>eres?</h1>
+    <p class="subtitle">Hay muchas formas de no estudiar. Y también alguna de hacerlo. Descubre cuál es la tuya.</p>
+    <hr class="header-rule">
+  </header>
+
+  <div id="quiz">
+    <div class="pagination" id="pagination"></div>
+    <div id="section-display"></div>
+    <div class="nav-area">
+      <button class="btn-nav" id="btnPrev" onclick="prevQ()" disabled>← Atrás</button>
+      <span class="nav-count" id="navCount">1 / 7</span>
+      <button class="btn-nav btn-next" id="btnNext" onclick="nextQ()" disabled>Siguiente →</button>
+    </div>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+const profiles = ['fantasma','veterano','turbo','foro','profe'];
+const profileEmoji = { fantasma:'👻', veterano:'🏚️', turbo:'📐', foro:'💬', profe:'☕' };
+const profileName  = {
+  fantasma: 'El Fantasma de Septiembre',
+  veterano: 'El Veterano de Guerra',
+  turbo:    'El Turbo-Serio',
+  foro:     'El del Foro',
+  profe:    'El Profesional en Crisis',
+};
+const profileShort = {
+  fantasma: 'El Fantasma',
+  veterano: 'El Veterano',
+  turbo:    'El Turbo-Serio',
+  foro:     'El del Foro',
+  profe:    'El Profesional',
+};
+
+const questions = [
+  {
+    text: "Es 1 de septiembre. Acabas de matricularte. ¿Qué pasa a continuación?",
+    opts: [
+      { p:'turbo',    text:"Abro un Excel. Divido el temario entre los días disponibles hasta el examen. Calculo los descansos. Me emociono." },
+      { p:'fantasma', text:"Compro los libros. Los pongo en la estantería bien colocados. Me siento capaz. Me voy a celebrarlo." },
+      { p:'veterano', text:"Nada. Ya sé cómo va esto. Los libros están en el armario del año pasado. En mayo miro si son la misma edición." },
+      { p:'foro',     text:"Me uno a todos los grupos de Telegram de la asignatura. Ya aprenderé lo que sea, pero rodeado de gente." },
+    ]
+  },
+  {
+    text: "Es octubre. ¿Cómo va el plan de estudio?",
+    sub: "(Sé honesto. Nadie te ve.)",
+    opts: [
+      { p:'turbo',    text:"Voy adelantado. He terminado el tema 3 y ya he repasado el 1 y el 2. El Excel sigue en verde." },
+      { p:'fantasma', text:"Los libros siguen en la estantería. He pensado en abrirlos varias veces. Es que octubre ha sido muy movidito." },
+      { p:'profe',    text:"Estudio en el metro, en el baño, en la hora de comer. 20 minutos aquí, 15 allá. El caos tiene su método." },
+      { p:'foro',     text:"He leído 400 mensajes del foro. Sé qué temas van a entrar, qué preguntas repiten y cómo es el corrector. No he abierto el libro." },
+    ]
+  },
+  {
+    text: "Llega la PEC. ¿Qué haces?",
+    sub: "(Aunque no dé para aprobar sola, algo dice de ti.)",
+    opts: [
+      { p:'turbo',    text:"La entrego el día 3 del plazo de 15. Con bibliografía adicional. Me molesta que no cuente más." },
+      { p:'veterano', text:"La hago la noche antes. He visto las PEC de los últimos 4 años. Tengo un método. No es bonito pero funciona." },
+      { p:'profe',    text:"La hago en el tren de las 7:23. Con el móvil. Sin desayunar. La entrego desde el andén." },
+      { p:'fantasma', text:"¿La PEC? Ah, sí. ¿Cuándo era el plazo? ¿El 15? ¿De qué mes?" },
+    ]
+  },
+  {
+    text: "Abres el foro de la asignatura. ¿Qué ves? ¿Qué haces?",
+    opts: [
+      { p:'foro',     text:"Mi hogar. Contesto dudas, saludo a los veteranos, tranquilizo a los nuevos. Llevo semanas aquí." },
+      { p:'veterano', text:"Busco el hilo de «¿qué temas entran?» y el de «examen 2021». Leo solo eso. Cierro." },
+      { p:'turbo',    text:"No entro al foro. El foro es ruido. Confunde. El temario es el temario." },
+      { p:'profe',    text:"Entro a las 11:47pm con los ojos medio cerrados. Leo tres mensajes. Me quedo dormido con el móvil en la mano." },
+    ]
+  },
+  {
+    text: "Faltan dos semanas para el examen. ¿Dónde estás?",
+    opts: [
+      { p:'fantasma', text:"Aquí. Empezando. Técnicamente es posible. He aprobado en menos tiempo. Creo. Modo supervivencia activado." },
+      { p:'turbo',    text:"Repasando. Ya tengo el temario hecho. Ahora hago tests de años anteriores, cronometrado. Como en los exámenes reales." },
+      { p:'veterano', text:"Igual que siempre: los últimos 15 días son los únicos que cuentan. El resto era calentamiento." },
+      { p:'profe',    text:"En el mismo sitio que siempre pero con más culpa. El estudio en el metro se ha vuelto estudio en el baño de la oficina." },
+    ]
+  },
+  {
+    text: "Es el día del examen presencial. ¿Cómo llegas?",
+    opts: [
+      { p:'turbo',    text:"30 minutos antes. Con el resumen plastificado que he leído en el coche. Repaso mental en el aparcamiento." },
+      { p:'profe',    text:"Directo desde el trabajo o con la cara de quien no ha dormido suficiente. Pero llego. Siempre llego." },
+      { p:'veterano', text:"Conozco el centro de examen como mi casa. Saludo al bedel. Sé qué silla tiene mejor luz." },
+      { p:'fantasma', text:"Llego. Eso ya es una victoria. Lo que pase dentro, que sea lo que tenga que ser." },
+    ]
+  },
+  {
+    text: "Ves la nota. ¿Qué pasa?",
+    opts: [
+      { p:'turbo',    text:"Un 7,8. Me sienta mal. Sé exactamente en qué pregunta perdí esos puntos. Lo analizo durante días." },
+      { p:'veterano', text:"Un 5,2. Perfecto. Exactamente lo necesario. A por la siguiente. Ya quedan menos." },
+      { p:'fantasma', text:"Un 4,8. Bueno. Para septiembre lo tengo. Septiembre está muy lejos. Seguro que en septiembre estoy más centrado." },
+      { p:'foro',     text:"Corro al foro a compartirlo. Anoto las notas de todos. Hago estadísticas. El proceso me importa tanto como el resultado." },
+    ]
+  },
+];
+
+const results = {
+  fantasma: {
+    tagline: "El gran proyecto de cada septiembre",
+    quien: `Eres el eterno optimista del sistema educativo a distancia. Cada año empiezas con una energía que rozaría el Turbo-Serio si durase más de tres semanas. Los libros los tienes. Los has comprado, los has olido, les has puesto el nombre. El problema es que entre comprar los libros y abrirlos hay una distancia que la UNED no puede medir en kilómetros pero tú sí.
+
+Llegas al examen. Eso es lo importante. Y a veces, con una concentración que solo genera el pánico real, sacas algo decente. Lo cual confirma tu teoría de que «si hubieras empezado antes, habrías sacado un 9». Puede que tengas razón. Puede que nunca lo comprobéis.`,
+    dato: `El Fantasma de Septiembre es el perfil más común de la UNED y también el más infravalorado. La tasa de abandono en el primer año ronda el 30-40%, pero los que se quedan desarrollan una resiliencia y una capacidad de improvisación bajo presión que ningún máster enseña. La UNED no es fácil para los organizados. Para los caóticos es una prueba de carácter.`,
+  },
+  veterano: {
+    tagline: "La carrera es larga, él más",
+    quien: `Llevas en esto el tiempo suficiente como para que la UNED sea parte de tu identidad. Ya no estudias una carrera: la habitas. Conoces los atajos, los profesores que repiten preguntas, los temas que nunca entran y los que siempre entran disfrazados. Tienes una relación con ciertas asignaturas que solo se puede llamar sentimental: la has suspendido tres veces y ya casi te parece normal verla en la matrícula.
+
+No es que hayas fracasado. Es que has aprendido que esto es un maratón y los que corren al principio están muertos en el kilómetro 20. Tú sigues. Eso tiene más mérito del que parece.`,
+    dato: `En la UNED hay estudiantes matriculados desde hace más de 15 años que siguen presentándose a exámenes con total normalidad. La universidad no tiene límite de convocatorias. Para el Veterano, esto no es un bug del sistema: es la feature principal.`,
+  },
+  turbo: {
+    tagline: "El Excel con patas",
+    quien: `Eres la persona que hace que el resto nos sintamos mal con nosotros mismos. Tienes el temario hecho en enero, los resúmenes de los resúmenes en febrero, y en abril ya estás repasando con tests cronometrados mientras los demás buscan dónde están los libros.
+
+El problema, y esto es importante, es que el examen no es el Excel. El examen es un folio, un bolígrafo y 90 minutos de presión real. Y a veces el Turbo-Serio, que ha preparado todo perfectamente, se bloquea en la pregunta 2 y sale con una nota que no refleja para nada lo que sabe. Lo cual genera una crisis existencial de 48 horas y un Excel aún más detallado para la siguiente convocatoria.`,
+    dato: `Estudios sobre rendimiento académico muestran que la planificación excesiva puede generar lo que se llama «parálisis por análisis»: el estudiante tan bien preparado que espera un examen perfecto, y cualquier desviación del guión le desestabiliza. La UNED, con su formato de examen presencial único, es especialmente cruel con este perfil.`,
+  },
+  foro: {
+    tagline: "El alma social del aprendizaje solitario",
+    quien: `Has encontrado la forma de hacer de la carrera más solitaria del mundo una experiencia casi comunitaria. Vives en el foro. Conoces a gente del foro. Probablemente tienes amigos del foro con los que nunca has hablado por teléfono pero a quienes mandarías una mudanza si te lo pidieran.
+
+El conocimiento que tienes de la asignatura es... peculiar. Sabes todo lo que dicen los demás sobre ella, todos los rumores sobre el examen, todos los temas que «según un compañero que conoce a alguien que preguntó al tutor» van a entrar. Lo que no siempre sabes es lo que pone en el libro. Pero el foro, ese sí te lo sabes de memoria.`,
+    dato: `Los foros de la UNED llevan activos desde los años 2000 y han creado comunidades que trascienden las asignaturas. Hay estudios sobre aprendizaje colaborativo online que señalan que el intercambio entre pares aumenta la motivación aunque no siempre la calificación. El del Foro lo confirma con su trayectoria.`,
+  },
+  profe: {
+    tagline: "La culpa como combustible",
+    quien: `Trabajas. Mucho. Tienes responsabilidades. La UNED te parece la única opción posible y al mismo tiempo la decisión más masoquista que has tomado en años. Estudias donde puedes: en el metro, en el baño, en los cinco minutos antes de una reunión, con los auriculares puestos mientras finges estar en otra llamada.
+
+No llevas nunca al día el ritmo que te propusiste en septiembre. Siempre vas con retraso. Pero llegas. Siempre llegas. Hay algo en ti que no abandona, aunque sea por pura terquedad o porque ya has pagado la matrícula y eso pesa. Apruebas con notas que no reflejan lo que sabes, sino lo que puedes dar en las condiciones que tienes. Que no es poco.`,
+    dato: `Más del 60% de los estudiantes de la UNED trabajan a jornada completa mientras estudian. La universidad fue diseñada específicamente para este perfil, pero «diseñada para» no significa «fácil para». El Profesional en Crisis es estadísticamente el perfil más frecuente y el que genera los egresados con más carácter.`,
+  },
+};
+
+const scores = { fantasma:0, veterano:0, turbo:0, foro:0, profe:0 };
+const answers = {};
+let currentQ = 0;
+const letters = ['a','b','c','d','e'];
+
+function buildPagination() {
+  const pag = document.getElementById('pagination');
+  pag.innerHTML = questions.map((_,i) => `<div class="pag-dot${i===0?' active':''}" id="dot-${i}"></div>`).join('');
+}
+
+function renderQuestion(idx) {
+  const q = questions[idx];
+  const container = document.getElementById('section-display');
+  container.style.opacity = '0';
+
+  setTimeout(() => {
+    const answered = answers[idx];
+    const optsHTML = q.opts.map((opt,i) => {
+      const sel = answered === opt.p ? 'selected' : '';
+      return `<button class="opt-btn opt-${opt.p} ${sel}" onclick="selectOpt(${idx},'${opt.p}',this)">
+        <span class="opt-letter">${letters[i]}</span>
+        <span class="opt-text">${opt.text}</span>
+      </button>`;
+    }).join('');
+
+    const subHTML = q.sub ? `<p class="q-sub">${q.sub}</p>` : '';
+
+    container.innerHTML = `<div class="question-card${answered?' answered':''} fade-in" id="qcard-${idx}">
+      <p class="q-label">Pregunta ${idx+1} de ${questions.length}</p>
+      <p class="q-text">${q.text}</p>
+      ${subHTML}
+      <div class="options">${optsHTML}</div>
+    </div>`;
+
+    container.style.transition = 'opacity 0.25s ease';
+    container.style.opacity = '1';
+    updateNav(); updatePagination(); updateProgress();
+  }, 120);
+}
+
+function selectOpt(qIdx, philo, btn) {
+  const prev = answers[qIdx];
+  if (prev) scores[prev]--;
+  answers[qIdx] = philo;
+  scores[philo]++;
+
+  document.querySelectorAll(`#qcard-${qIdx} .opt-btn`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById(`qcard-${qIdx}`).classList.add('answered');
+
+  updateNav(); updateProgress();
+
+  if (qIdx < questions.length - 1) {
+    setTimeout(() => { currentQ = qIdx + 1; renderQuestion(currentQ); window.scrollTo({top:0,behavior:'smooth'}); }, 420);
+  }
+}
+
+function nextQ() {
+  if (currentQ < questions.length - 1) {
+    currentQ++; renderQuestion(currentQ); window.scrollTo({top:0,behavior:'smooth'});
+  } else { showResult(); }
+}
+
+function prevQ() {
+  if (currentQ > 0) { currentQ--; renderQuestion(currentQ); window.scrollTo({top:0,behavior:'smooth'}); }
+}
+
+function updatePagination() {
+  questions.forEach((_,i) => {
+    const dot = document.getElementById(`dot-${i}`);
+    if (!dot) return;
+    dot.className = 'pag-dot';
+    if (i === currentQ) dot.classList.add('active');
+    else if (answers[i]) dot.classList.add('done');
+  });
+}
+
+function updateNav() {
+  const answered = Object.keys(answers).length;
+  const curAnswered = answers[currentQ] !== undefined;
+  const isLast = currentQ === questions.length - 1;
+  document.getElementById('btnPrev').disabled = currentQ === 0;
+  document.getElementById('navCount').textContent = `${currentQ+1} / ${questions.length}`;
+  const btnNext = document.getElementById('btnNext');
+  if (isLast) {
+    btnNext.textContent = '¡Ver resultado! →';
+    btnNext.disabled = answered < questions.length;
+  } else {
+    btnNext.textContent = 'Siguiente →';
+    btnNext.disabled = !curAnswered;
+  }
+}
+
+function updateProgress() {
+  const answered = Object.keys(answers).length;
+  document.getElementById('progressBar').style.width = `${(answered/questions.length)*100}%`;
+}
+
+function showResult() {
+  const winner = profiles.reduce((a,b) => scores[a] >= scores[b] ? a : b);
+  const res = results[winner];
+  const total = Object.values(scores).reduce((a,b)=>a+b,0);
+
+  document.getElementById('quiz').style.display = 'none';
+  const resultEl = document.getElementById('result');
+  resultEl.style.display = 'block';
+
+  const barsHTML = profiles.map(p => {
+    const pct = total > 0 ? Math.round((scores[p]/total)*100) : 0;
+    return `<div class="score-row">
+      <span class="score-name">${profileShort[p]}</span>
+      <div class="score-bar-bg"><div class="score-bar-fill ${p}" id="bar-${p}"></div></div>
+      <span class="score-pct" id="pct-${p}">0%</span>
+    </div>`;
+  }).join('');
+
+  const bodyParagraphs = res.quien.split('\n\n').map(p => `<p style="margin-bottom:1rem">${p}</p>`).join('');
+
+  resultEl.innerHTML = `
+    <div class="result-hero res-${winner} fade-in">
+      <span class="result-emoji">${profileEmoji[winner]}</span>
+      <p class="result-verdict">Tu perfil UNED es...</p>
+      <p class="result-name">${profileName[winner]}</p>
+      <p class="result-tagline">${res.tagline}</p>
+    </div>
+
+    <div class="result-body fade-in" style="animation-delay:0.2s">
+      <p class="result-section-title">¿Quién eres?</p>
+      <div class="result-quien-text">${bodyParagraphs}</div>
+      <div class="dato-nerd-label">El dato</div>
+      <div class="dato-nerd">${res.dato}</div>
+    </div>
+
+    <div class="dim-section fade-in" style="animation-delay:0.4s">
+      <p class="result-section-title">Tu reparto interno</p>
+      ${barsHTML}
+    </div>
+
+    <div class="result-footer fade-in" style="animation-delay:0.6s">
+      <button class="btn-restart" onclick="restart()">← Volver a empezar</button>
+    </div>
+  `;
+
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  setTimeout(() => {
+    profiles.forEach(p => {
+      const pct = total > 0 ? Math.round((scores[p]/total)*100) : 0;
+      const bar = document.getElementById(`bar-${p}`);
+      const pctEl = document.getElementById(`pct-${p}`);
+      if (bar) bar.style.width = pct + '%';
+      if (pctEl) {
+        let n = 0;
+        const t = setInterval(() => {
+          n = Math.min(n+2, pct);
+          pctEl.textContent = n + '%';
+          if (n >= pct) clearInterval(t);
+        }, 18);
+      }
+    });
+  }, 300);
+}
+
+function restart() {
+  profiles.forEach(p => scores[p] = 0);
+  Object.keys(answers).forEach(k => delete answers[k]);
+  currentQ = 0;
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  buildPagination();
+  renderQuestion(0);
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+buildPagination();
+renderQuestion(0);
+updateProgress();
+</script>
+</body>
+</html>
